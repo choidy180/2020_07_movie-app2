@@ -1,39 +1,40 @@
 import React from 'react';
+import PropTypes from "prop-types";
+import "./Movie.css"
 
-class App extends React.Component {
-  constructor(props){
-    super(props)
-    console.log("hello");
-  }
-  state = {
-    count: 0
-  };
-  plus = () => {
-    console.log("plus")
-    this.setState(current => ({count: current.count + 1}));
-  };
-  minus = () => {
-    console.log("minus")
-    this.setState({count: this.state.count - 1});
-  };
-  // 컴포넌트 렌더링 할때
-  componentDidMount(){
-    console.log("component render");
-  }
-  // 업데이트시 
-  componentDidUpdate(){
-    console.log("I just update");
-  }
-  render() {
-    console.log("render");
+function Movie({ id, year, title, summary, rating, poster, genres }) {
     return (
-      <div>
-        <h1>I number is {this.state.count}</h1>
-        <button onClick={this.plus}>PLUS</button>
-        <button onClick={this.minus}>MINUS</button>
-      </div>
+        <div className="movie">
+            {/* 포스터 */}
+            <img src={poster} alt={title} title={title} />
+            <div className="movie__data">
+                {/* 제목 */}
+                <h3 className="movie__title">{title}</h3>
+                {/* 연도 */}
+                <h5 className="movie__year">{year}</h5>
+                {/* 장르 */}
+                <ul className="genres">
+                    {genres.map((genre, index) => (
+                        <li key={index} className="genres__genres">{genre}</li>
+                    ))}
+                </ul>
+                {/* 평점 */}
+                <h4 className="movie__rating">{rating}/10</h4>
+                {/* 요약글, 140자까지만 출력 */}
+                <p className="movie__summary">{summary.slice(0, 140)}...</p>
+            </div>
+        </div>
     )
-  }
 }
 
-export default App;
+Movie.propTypes = {
+    id: PropTypes.number.isRequired,
+    year: PropTypes.number.isRequired,
+    title: PropTypes.string.isRequired,
+    summary: PropTypes.string.isRequired,
+    rating: PropTypes.number.isRequired,
+    poster: PropTypes.string.isRequired,
+    genres: PropTypes.arrayOf(PropTypes.string).isRequired
+}
+
+export default Movie;
