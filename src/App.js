@@ -1,40 +1,52 @@
-import React from 'react';
-import PropTypes from "prop-types";
-import "./Movie.css"
+import React from "react";
+import axios from "axios";
+import Movie from "./Movie";
+import "./App.css";
 
-function Movie({ id, year, title, summary, rating, poster, genres }) {
+class App extends React.Component {
+  state = {
+    isLoading: true,
+    movies: []
+  };
+  getMovies = async () => {
+    const {
+      data: {
+        data: { movies }
+      }
+    } = await axios.get(
+      "https://yts-proxy.now.sh/list_movies.json?sort_by=rating"
+    );
+    this.setState({ movies, isLoading: false });
+  };
+  componentDidMount() {
+    this.getMovies();
+  }
+  render() {
+    const { isLoading, movies } = this.state;
     return (
-        <div className="movie">
-            {/* 포스터 */}
-            <img src={poster} alt={title} title={title} />
-            <div className="movie__data">
-                {/* 제목 */}
-                <h3 className="movie__title">{title}</h3>
-                {/* 연도 */}
-                <h5 className="movie__year">{year}</h5>
-                {/* 장르 */}
-                <ul className="genres">
-                    {genres.map((genre, index) => (
-                        <li key={index} className="genres__genres">{genre}</li>
-                    ))}
-                </ul>
-                {/* 평점 */}
-                <h4 className="movie__rating">{rating}/10</h4>
-                {/* 요약글, 140자까지만 출력 */}
-                <p className="movie__summary">{summary.slice(0, 140)}...</p>
-            </div>
-        </div>
-    )
+      <section className="container">
+        {isLoading ? (
+          <div className="loader">
+            <span className="loader__text">Loading...</span>
+          </div>
+        ) : (
+          <div className="movies">
+            {movies.map(movie => (
+              <Movie
+                key={movie.id}
+                id={movie.id}
+                year={movie.year}
+                title={movie.title}
+                summary={movie.summary}
+                poster={movie.medium_cover_image}
+                genres={movie.genres}
+              />
+            ))}
+          </div>
+        )}
+      </section>
+    );
+  }
 }
 
-Movie.propTypes = {
-    id: PropTypes.number.isRequired,
-    year: PropTypes.number.isRequired,
-    title: PropTypes.string.isRequired,
-    summary: PropTypes.string.isRequired,
-    rating: PropTypes.number.isRequired,
-    poster: PropTypes.string.isRequired,
-    genres: PropTypes.arrayOf(PropTypes.string).isRequired
-}
-
-export default Movie;
+export default App;
